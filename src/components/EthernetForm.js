@@ -348,9 +348,11 @@ class EthernetForm extends Component {
         othersOffset += 4;
       } else if (MY_GLOBAL.headersSelected[i] === "PPPoE") {
         othersOffset += 12;
-      } else {
-        othersOffset += 14;
-      }
+      } 
+      else if (MY_GLOBAL.headersSelected[i] === "VXLAN") othersOffset += 24;
+      else if (MY_GLOBAL.headersSelected[i] === "ARP") othersOffset += 28;
+      else othersOffset += 14;
+      
     }
 
     let dmacOffset = 0 + othersOffset;

@@ -189,9 +189,10 @@ export class MplsForm extends Component {
         othersOffset += 4;
       } else if (MY_GLOBAL.headersSelected[i] === "SRv6")
         othersOffset += MY_GLOBAL.srv6Length[i];
-      else {
-        othersOffset += 4;
-      }
+      else if (MY_GLOBAL.headersSelected[i] === "VXLAN") othersOffset += 24;
+      else if (MY_GLOBAL.headersSelected[i] === "ARP") othersOffset += 28;
+      else othersOffset += 4;
+    
     }
 
     let flag1 = 0;

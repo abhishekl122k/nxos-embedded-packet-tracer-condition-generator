@@ -223,6 +223,8 @@ export class Dot1qForm extends Component {
       else if (MY_GLOBAL.headersSelected[i] === "PPPoE") othersOffset += 12;
       else if (MY_GLOBAL.headersSelected[i] === "SRv6")
         othersOffset += MY_GLOBAL.srv6Length[i];
+      else if (MY_GLOBAL.headersSelected[i] === "VXLAN") othersOffset += 24;
+      else if (MY_GLOBAL.headersSelected[i] === "ARP") othersOffset += 28;
     }
 
     let tciOffset = 0 + othersOffset;

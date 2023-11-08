@@ -438,10 +438,10 @@
  
    handleVxlanAdd() {
      if (this.state.vxlanLinkClicked >= 0) {
-       MY_GLOBAL.headersSelected.push("Vxlan");
+       MY_GLOBAL.headersSelected.push("VXLAN");
        this.setState((prev) => ({
          headersCheckboxed: [...prev.headersCheckboxed, false],
-         vxlanLinkClicked: prev.vxlanLinkClicked + 1,
+         vxlanLinkClicked: 1,
        }));
      }
    }
@@ -451,7 +451,7 @@
        MY_GLOBAL.headersSelected.push("ARP");
        this.setState((prev) => ({
          headersCheckboxed: [...prev.headersCheckboxed, false],
-         arpLinkClicked: prev.arpLinkClicked + 1,
+         arpLinkClicked: 1,
        }));
      }
    }
@@ -462,14 +462,14 @@
    handleVxlanMinus() {
      if (this.state.vxlanLinkClicked > 0) {
        MY_GLOBAL.headersSelected.splice(
-         MY_GLOBAL.headersSelected.lastIndexOf("Vxlan"),
+         MY_GLOBAL.headersSelected.lastIndexOf("VXLAN"),
          1
        );
        let tempArray = [...this.state.headersCheckboxed];
        tempArray.splice(tempArray.length - 1, 1);
        this.setState((prev) => ({
          headersCheckboxed: tempArray,
-         vxlanLinkClicked: prev.vxlanLinkClicked - 1,
+         vxlanLinkClicked: 0,
        }));
      }
    }
@@ -484,7 +484,7 @@
        tempArray.splice(tempArray.length - 1, 1);
        this.setState((prev) => ({
          headersCheckboxed: tempArray,
-         arpLinkClicked: prev.arpLinkClicked - 1,
+         arpLinkClicked: 0,
        }));
      }
    }
@@ -550,7 +550,7 @@
                    <SRv6Form action={i} step3={this.step3handler} />
                  ) : MY_GLOBAL.headersSelected[i] === "TCP" ? (
                    <TCPForm step3={this.step3handler} />
-                 ) : MY_GLOBAL.headersSelected[i] === "Vxlan" ? (
+                 ) : MY_GLOBAL.headersSelected[i] === "VXLAN" ? (
                    <VxlanForm step3={this.step3handler} />
                  ) : MY_GLOBAL.headersSelected[i] === "ARP" ? (
                    <ARPForm step3={this.step3handler} />

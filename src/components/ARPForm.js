@@ -15,6 +15,7 @@ import { FaQuestion } from "react-icons/fa";
 import DropdownItem from "react-bootstrap/DropdownItem";
 import IPPrecedenceOptions from "./IPPrecedenceOptions";
 import DSCPOptions from "./DSCPOptions";
+import { Address6 } from "ip-address/ip-address";
 import MY_GLOBAL from "./Globals";
 import DisplayTriplets from "./DisplayTriplets";
 
@@ -32,10 +33,15 @@ export class ARPForm extends Component {
       hardwareAddressLength: 48,      // length 8    hardcoded for IPv4
       protocolAddressLength: 32,      // length 8    hardcoded for IPv4
       operation: "",                  // length 16   either 1 (for request) or 2 (for reply)
+      
       senderHardwareAddress: "",      // length 48
+      senderHardwareAddressMask: "",
       senderProtocolAddress: "",      // length 32
+      senderProtocolAddressMask: "",
       targetHardwareAddress: "",      // length 48
+      targetHardwareAddressMask: "",
       targetProtocolAddress: "",      // length 32
+      targetProtocolAddressMask: "",
       tripletValue: "",               // total length 224 (28 bytes)
 
       hardwareTypeError: false,
@@ -43,7 +49,16 @@ export class ARPForm extends Component {
       senderHardwareAddressError: false,
       senderProtocolAddressError: false,
       targetHardwareAddressError: false,
-      targetProtocolAddressError: false
+      targetProtocolAddressError: false,
+      senderHardwareAddressMaskError: false,
+      senderHardwareAddressMaskEmptyError: false,
+      senderProtocolAddressMaskError: false,
+      senderProtocolAddressMaskEmptyError: false,
+      targetHardwareAddressMaskError: false,
+      targetHardwareAddressEmptyError: false,
+      targetProtocolAddressMaskError: false,
+      targetProtocolAddressMaskEmptyError: false,
+      emptyError: false
     };
     
     // this.validateProtocolType = this.validateProtocolType.bind(this);
@@ -139,6 +154,20 @@ export class ARPForm extends Component {
     );
   }
 
+  validateSenderHardwareAddressMask() {
+    let macAddress = this.state.senderHardwareAddressMask
+    const regex = /^([0F0f]{2}[:-]){5}([0F0f]{2})$/;
+    if (regex.test(macAddress)) return true;
+    this.setState(
+      {
+        senderHardwareAddressMaskError: true,
+      },
+      () => {
+        return false;
+      }
+    );
+  }
+
   validateTargetHardwareAddress() {
     let macAddress = this.state.targetHardwareAddress
     const regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
@@ -146,6 +175,20 @@ export class ARPForm extends Component {
     this.setState(
       {
         targetHardwareAddressError: true,
+      },
+      () => {
+        return false;
+      }
+    );
+  }
+
+  validateTargetHardwareAddressMask() {
+    let macAddress = this.state.targetHardwareAddressMask
+    const regex = /^([0F0f]{2}[:-]){5}([0F0f]{2})$/;
+    if (regex.test(macAddress)) return true;
+    this.setState(
+      {
+        TargetHardwareAddressMaskError: true,
       },
       () => {
         return false;
@@ -168,6 +211,21 @@ export class ARPForm extends Component {
     );
   }
 
+  validateSenderProtocolAddressMask() {
+    let regex = /^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/;
+    if (regex.test(this.state.senderProtocolAddressMask.replace(/^\s+|\s+$/g, ""))) {
+      return true;
+    }
+    this.setState(
+      {
+        senderProtocolAddressMaskError: true,
+      },
+      () => {
+        return false;
+      }
+    );
+  }
+
   validateTargetProtocolAddress() {
     let regex = /^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/;
     if (regex.test(this.state.targetProtocolAddress.replace(/^\s+|\s+$/g, ""))) {
@@ -183,18 +241,401 @@ export class ARPForm extends Component {
     );
   }
 
-  validateARPForm() {
-
+  validateTargetProtocolAddressMask() {
+    let regex = /^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$/;
+    if (regex.test(this.state.targetProtocolAddressMask.replace(/^\s+|\s+$/g, ""))) {
+      return true;
+    }
+    this.setState(
+      {
+        targetProtocolAddressMaskError: true,
+      },
+      () => {
+        return false;
+      }
+    );
   }
 
-  handleARPSubmit() {
+  validateARPForm() {
+    let flag = 0;
+  
+    // Check if all fields are empty
+    if(this.state.hardwareType === "" && this.state.operation === "" && 
+       this.state.senderHardwareAddress === "" && this.state.senderProtocolAddress === "" &&
+       this.state.targetHardwareAddress === "" && this.state.targetProtocolAddress === "" &&
+       this.state.senderHardwareAddressMask === "" && this.state.targetHardwareAddressMask === "" &&
+       this.state.senderProtocolAddressMask === "" && this.state.targetProtocolAddressMask === "") {
+      this.setState({ emptyError: true });
+      return false;
+    }
+  
+    // Validate each field and corresponding mask
+    if(this.state.hardwareType !== ""){
+      flag = 1;
+      if(!this.validateHardwareType()) return false;
+    }
+  
+    if(this.state.operation !== ""){
+      flag = 1;
+      if(!this.validateOperation()) return false;
+    }
+  
+    // Check sender hardware address and mask
+    if(this.state.senderHardwareAddress !== "" && this.state.senderHardwareAddressMask === "") {
+      this.setState({ senderHardwareAddressMaskEmptyError: true });
+      return false;
+    }
+    if(this.state.senderHardwareAddress !== "" && !this.validateSenderHardwareAddress() ||
+       this.state.senderHardwareAddressMask !== "" && !this.validateSenderHardwareAddressMask()) {
+      return false;
+    }
+    if(this.state.senderHardwareAddress !== "" || this.state.senderHardwareAddressMask !== "") {
+      flag = 1;
+    }
+  
+    // Check sender protocol address and mask
+    if(this.state.senderProtocolAddress !== "" && this.state.senderProtocolAddressMask === "") {
+      this.setState({ senderProtocolAddressMaskEmptyError: true });
+      return false;
+    }
+    if(this.state.senderProtocolAddress !== "" && !this.validateSenderProtocolAddress() ||
+       this.state.senderProtocolAddressMask !== "" && !this.validateSenderProtocolAddressMask()) {
+      return false;
+    }
+    if(this.state.senderProtocolAddress !== "" || this.state.senderProtocolAddressMask !== "") {
+      flag = 1;
+    }
+  
+    // Check target hardware address and mask
+    if(this.state.targetHardwareAddress !== "" && this.state.targetHardwareAddressMask === "") {
+      this.setState({ targetHardwareAddressMaskEmptyError: true });
+      return false;
+    }
+    if(this.state.targetHardwareAddress !== "" && !this.validateTargetHardwareAddress() ||
+       this.state.targetHardwareAddressMask !== "" && !this.validateTargetHardwareAddressMask()) {
+      return false;
+    }
+    if(this.state.targetHardwareAddress !== "" || this.state.targetHardwareAddressMask !== "") {
+      flag = 1;
+    }
+  
+    // Check target protocol address and mask
+    if(this.state.targetProtocolAddress !== "" && this.state.targetProtocolAddressMask === "") {
+      this.setState({ targetProtocolAddressMaskEmptyError: true });
+      return false;
+    }
+    if(this.state.targetProtocolAddress !== "" && !this.validateTargetProtocolAddress() ||
+       this.state.targetProtocolAddressMask !== "" && !this.validateTargetProtocolAddressMask()) {
+      return false;
+    }
+    if(this.state.targetProtocolAddress !== "" || this.state.targetProtocolAddressMask !== "") {
+      flag = 1;
+    }
+  
+    if(flag === 1) return true;
+    return false;
+  }
 
+
+  handleARPSubmit() {
+    this.setState(
+      {
+        arpSubmit: false,
+        emptyError: false,
+        hardwareTypeError: false,
+        operationError: false,
+        senderHardwareAddressError: false,
+        senderHardwareAddressMaskEmptyError: false,
+        senderHardwareAddressMaskError: false,
+        senderProtocolAddressError: false,
+        senderProtocolAddressMaskEmptyError: false,
+        senderProtocolAddressMaskError: false,
+        targetHardwareAddressError: false,
+        targetHardwareAddressMaskEmptyError: false,
+        targetHardwareAddressMaskError: false,
+        targetProtocolAddressError: false,
+        targetProtocolAddressMaskEmptyError: false,
+        targetProtocolAddressMaskError: false,
+        tripletValue: "",
+      },
+      () => {
+        if (this.validateARPForm()) {
+          this.calculateARPTriplet();
+          this.setState({
+            arpSubmit: true,
+          });
+        }
+      }
+    );
   }
 
   calculateARPTriplet() {
+    let othersOffset = 0;
 
+    for (let i = 0; i < MY_GLOBAL.headersSelected.length; i++) {
+      if (MY_GLOBAL.headersSelected[i] === "ARP") break;
+      else if (MY_GLOBAL.headersSelected[i] === "Ethernet") othersOffset += 14;
+      else if (MY_GLOBAL.headersSelected[i] === "MPLS") othersOffset += 4;
+      else if (MY_GLOBAL.headersSelected[i] === "PW Control Word")
+        othersOffset += 4;
+      else if (MY_GLOBAL.headersSelected[i] === "PPPoE") othersOffset += 12;
+      else if (MY_GLOBAL.headersSelected[i] === "IPv4") othersOffset += 20;
+      else if (MY_GLOBAL.headersSelected[i] === "IPv6") othersOffset += 40;
+      else if (MY_GLOBAL.headersSelected[i] === "Dot1q") othersOffset += 4;
+      else if (MY_GLOBAL.headersSelected[i] === "SRv6")
+        othersOffset += MY_GLOBAL.srv6Length[i];
+      else if (MY_GLOBAL.headersSelected[i] === "UDP") othersOffset += 8;
+      else if (MY_GLOBAL.headersSelected[i] === "VXLAN") othersOffset += 24;
+    }
+
+    let temp1 = "";
+    let temp2 = "";
+    let hardwareTypeOffset = 0 + othersOffset;
+    let hardwareTypeValue = "";
+    let hardwareTypeMask = "ffff";
+    let operationOffset = 6 + othersOffset;
+    let operationValue = "";
+    let operationMask = "ffff";
+    let senderHardwareAddressOffset = 8 + othersOffset;
+    let senderHardwareAddressValue = "";
+    let senderHardwareAddressMask = "";
+    let senderProtocolAddressOffset = 14 + othersOffset;
+    let senderProtocolAddressValue = "";
+    let senderProtocolAddressMask = "";
+    let targetHardwareAddressOffset = 18 + othersOffset;
+    let targetHardwareAddressValue = "";
+    let targetHardwareAddressMask = "";
+    let targetProtocolAddressOffset = 24 + othersOffset;
+    let targetProtocolAddressValue = "";
+    let targetProtocolAddressMask = "";
+    let ans = "";
+
+
+    if (this.state.hardwareType !== "") {
+      hardwareTypeValue = parseInt(this.state.hardwareType).toString(16);
+      if (hardwareTypeValue.length === 1 || hardwareTypeValue.length === 2) {
+        hardwareTypeOffset += 1;
+        hardwareTypeMask = "ff";
+        if (hardwareTypeValue.length === 1) {
+          temp1 = "0";
+        }
+      } else if (hardwareTypeValue.length === 3) {
+        temp1 = "0";
+      }
+
+      ans +=
+        "Hardware Type: Offset " +
+        hardwareTypeOffset +
+        " Value 0x" +
+        temp1 +
+        hardwareTypeValue +
+        " Mask 0x" +
+        hardwareTypeMask +
+        "\n";
+    }
+
+    if (this.state.operation !== "") {
+      operationValue = parseInt(this.state.operation).toString(16);
+      if (operationValue.length === 1 || operationValue.length === 2) {
+        operationOffset += 1;
+        operationMask = "ff";
+        if (operationValue.length === 1) {
+          temp2 = "0";
+        }
+      } else if (operationValue.length === 3) {
+        temp2 = "0";
+      }
+
+      ans +=
+        "Operation: Offset " +
+        operationOffset +
+        " Value 0x" +
+        temp2 +
+        operationValue +
+        " Mask 0x" +
+        operationMask +
+        "\n";
+    }
+
+    if(this.state.senderHardwareAddressMask !== ""){
+
+      if (this.state.senderHardwareAddress !== "" ) {
+        let senderHardwareAddressTemp1 = this.state.senderHardwareAddress.replace(/:/g, '').trim();
+        let senderHardwareAddressTemp2 = this.state.senderHardwareAddressMask.replace(/:/g, '').trim();
+        senderHardwareAddressValue = this.bitwiseAnd(senderHardwareAddressTemp1, senderHardwareAddressTemp2);
+        ans +=
+          "Sender Hardware Address: Offset " +
+          senderHardwareAddressOffset +
+          " Value 0x" +
+          senderHardwareAddressValue.slice(0, senderHardwareAddressValue.length / 2) +
+          " Mask 0x" +
+          senderHardwareAddressTemp2.slice(0, senderHardwareAddressTemp2.length / 2)  +
+          "\n";
+
+        senderHardwareAddressOffset += 3;
+        
+        ans +=
+        "Sender Hardware Address: Offset " +
+        senderHardwareAddressOffset +
+        " Value 0x" +
+        senderHardwareAddressValue.slice(senderHardwareAddressValue.length / 2) +
+        " Mask 0x" +
+        senderHardwareAddressTemp2.slice(senderHardwareAddressTemp2.length / 2)  +
+        "\n";
+
+        senderHardwareAddressValue = "";
+        senderHardwareAddressMask = "";
+        senderHardwareAddressOffset = 0;
+      } else {
+        let senderHardwareAddressTemp2 = this.state.senderHardwareAddressMask.replace(/:/g, '').trim();
+        ans +=
+          "Sender Hardware Address: Mask 0x" +
+          senderHardwareAddressTemp2.slice(0, senderHardwareAddressTemp2.length / 2)  +
+          "\n";
+
+        ans +=
+          "Sender Hardware Address: Mask 0x" +
+          senderHardwareAddressTemp2.slice(senderHardwareAddressTemp2.length / 2)  +
+          "\n";
+        
+        senderHardwareAddressValue = "";
+        senderHardwareAddressMask = "";
+      } 
+    }
+    
+    if (this.state.senderProtocolAddress !== "") {
+      let senderProtocolAddressTemp1 = this.state.senderProtocolAddress
+        .replace(/^\s+|\s+$/g, "")
+        .split(".");
+      let senderProtocolAddressTemp2;
+      if (this.state.senderProtocolAddressMask !== "") {
+        senderProtocolAddressTemp2 = this.state.senderProtocolAddressMask
+          .replace(/^\s+|\s+$/g, "")
+          .split(".");
+      } else {
+        senderProtocolAddressTemp2 = "255.255.255.255".split(".");
+      }
+
+      let i = 3;
+      let count = 0;
+      while (senderProtocolAddressTemp2[i] === "0") {
+        count++;
+        i--;
+      }
+      for (let j = 0; j < 4 - count; j++) {
+        if (parseInt(senderProtocolAddressTemp1[j]).toString(16).length === 1) {
+          senderProtocolAddressValue += "0";
+        }
+        senderProtocolAddressValue += parseInt(senderProtocolAddressTemp1[j]).toString(16);
+        if (parseInt(senderProtocolAddressTemp2[j]).toString(16).length === 1) {
+          senderProtocolAddressMask += "0";
+        }
+        senderProtocolAddressMask += parseInt(senderProtocolAddressTemp2[j]).toString(16);
+      }
+
+      senderProtocolAddressValue = this.bitwiseAnd(senderProtocolAddressValue, senderProtocolAddressMask);
+      ans +=
+        "Source IP: Offset " +
+        senderProtocolAddressOffset +
+        " Value 0x" +
+        senderProtocolAddressValue +
+        " Mask 0x" +
+        senderProtocolAddressMask +
+        "\n";
+    }
+
+
+    if(this.state.targetHardwareAddressMask !== ""){
+
+      if (this.state.targetHardwareAddress !== "" ) {
+        let targetHardwareAddressTemp1 = this.state.targetHardwareAddress.replace(/:/g, '').trim();
+        let targetHardwareAddressTemp2 = this.state.targetHardwareAddressMask.replace(/:/g, '').trim();
+        targetHardwareAddressValue = this.bitwiseAnd(targetHardwareAddressTemp1, targetHardwareAddressTemp2);
+        ans +=
+          "Target Hardware Address: Offset " +
+          targetHardwareAddressOffset +
+          " Value 0x" +
+          targetHardwareAddressValue.slice(0, targetHardwareAddressValue.length / 2) +
+          " Mask 0x" +
+          targetHardwareAddressTemp2.slice(0, targetHardwareAddressTemp2.length / 2)  +
+          "\n";
+
+        targetHardwareAddressOffset += 3;
+        
+        ans +=
+        "Target Hardware Address: Offset " +
+        targetHardwareAddressOffset +
+        " Value 0x" +
+        targetHardwareAddressValue.slice(targetHardwareAddressValue.length / 2) +
+        " Mask 0x" +
+        targetHardwareAddressTemp2.slice(targetHardwareAddressTemp2.length / 2)  +
+        "\n";
+
+        targetHardwareAddressValue = "";
+        targetHardwareAddressMask = "";
+        targetHardwareAddressOffset = 0;
+      } else {
+        let targetHardwareAddressTemp2 = this.state.targetHardwareAddressMask.replace(/:/g, '').trim();
+        ans +=
+          "Target Hardware Address: Mask 0x" +
+          targetHardwareAddressTemp2.slice(0, targetHardwareAddressTemp2.length / 2)  +
+          "\n";
+
+        ans +=
+          "Target Hardware Address: Mask 0x" +
+          targetHardwareAddressTemp2.slice(targetHardwareAddressTemp2.length / 2)  +
+          "\n";
+        
+        targetHardwareAddressValue = "";
+        targetHardwareAddressMask = "";
+      } 
+    }
+
+    if (this.state.targetProtocolAddress !== "") {
+      let targetProtocolAddressTemp1 = this.state.targetProtocolAddress
+        .replace(/^\s+|\s+$/g, "")
+        .split(".");
+      let targetProtocolAddressTemp2;
+      if (this.state.targetProtocolAddressMask !== "") {
+        targetProtocolAddressTemp2 = this.state.targetProtocolAddressMask
+          .replace(/^\s+|\s+$/g, "")
+          .split(".");
+      } else {
+        targetProtocolAddressTemp2 = "255.255.255.255".split(".");
+      }
+  
+      let i = 3;
+      let count = 0;
+      while (targetProtocolAddressTemp2[i] === "0") {
+        count++;
+        i--;
+      }
+      for (let j = 0; j < 4 - count; j++) {
+        if (parseInt(targetProtocolAddressTemp1[j]).toString(16).length === 1) {
+          targetProtocolAddressValue += "0";
+        }
+        targetProtocolAddressValue += parseInt(targetProtocolAddressTemp1[j]).toString(16);
+        if (parseInt(targetProtocolAddressTemp2[j]).toString(16).length === 1) {
+          targetProtocolAddressMask += "0";
+        }
+        targetProtocolAddressMask += parseInt(targetProtocolAddressTemp2[j]).toString(16);
+      }
+  
+      targetProtocolAddressValue = this.bitwiseAnd(targetProtocolAddressValue, targetProtocolAddressMask);
+      ans +=
+        "Source IP: Offset " +
+        targetProtocolAddressOffset +
+        " Value 0x" +
+        targetProtocolAddressValue +
+        " Mask 0x" +
+        targetProtocolAddressMask +
+        "\n";
+    }
+
+    this.setState({
+      tripletValue: ans,
+    });
   }
-
 
   render() {
     return (
@@ -221,6 +662,7 @@ export class ARPForm extends Component {
                   </OverlayTrigger>
                 </Form.Label>
               </Form.Group>
+
               <Form.Group as={Col} controlId="formGridTypeValue">
                 <InputGroup>
                   <DropdownButton
@@ -283,7 +725,7 @@ export class ARPForm extends Component {
                 <Form.Control
                   type="text"
                   name="operation"
-                  placeholder="Operation"
+                  placeholder="Enter Operation"
                   value={this.state.operation}
                   onChange={this.handleChange}
                 />
@@ -291,36 +733,66 @@ export class ARPForm extends Component {
 
             </Form.Row>
 
+            
+            {/* Sender Hardware Address */}
             <Form.Row>
-              {/* Sender Hardware Address */}
-              <Form.Group as={Col} controlId="formGridSenderHardwareAddress">
-                <Form.Label>
-                  Sender Hardware Address{" "}
-                  <OverlayTrigger
-                    placement="right"
-                    delay={{ show: 250, hide: 400 }}
-                    overlay={
-                      <Tooltip>
-                        Format to be followed: x:x:x:x:x:x where
-                        x=00...ff{" "}
-                      </Tooltip>
-                    }
-                  >
-                    <small style={{ color: "#5DADE2" }}>
-                      <FaQuestion />
-                    </small>
-                  </OverlayTrigger>
-                </Form.Label>
-                <Form.Control
-                  type="text"
-                  name="senderHardwareAddress"
-                  placeholder="Enter Sender Hardware Address"
-                  value={this.state.senderHardwareAddress}
-                  onChange={this.handleChange}
-                />
-              </Form.Group>
+            <Form.Group as={Col} controlId="formGridSenderHardwareAddress">
+              <Form.Label>
+                Sender Hardware Address{" "}
+                <OverlayTrigger
+                  placement="right"
+                  delay={{ show: 250, hide: 400 }}
+                  overlay={
+                    <Tooltip>
+                      Format to be followed: x:x:x:x:x:x where
+                      x=00...ff{" "}
+                    </Tooltip>
+                  }
+                >
+                  <small style={{ color: "#5DADE2" }}>
+                    <FaQuestion />
+                  </small>
+                </OverlayTrigger>
+              </Form.Label>
+              <Form.Control
+                type="text"
+                name="senderHardwareAddress"
+                placeholder="Enter Sender Hardware Address"
+                value={this.state.senderHardwareAddress}
+                onChange={this.handleChange}
+              />
+            </Form.Group>
 
-              {/* Sender Protocol Address */}
+            <Form.Group as={Col} controlId="formGridSenderHardwareAddressMask">
+              <Form.Label>
+              Sender Hardware Address Mask{" "}
+                <OverlayTrigger
+                  placement="bottom"
+                  delay={{ show: 250, hide: 400 }}
+                  overlay={
+                    <Tooltip>
+                      Maximum 6 octets can be matched. Format to be followed:
+                      x:x:x:x:x:x where x=00...ff{" "}
+                    </Tooltip>
+                  }
+                >
+                  <small style={{ color: "#5DADE2" }}>
+                    <FaQuestion />
+                  </small>
+                </OverlayTrigger>
+              </Form.Label>
+              <Form.Control
+                type="text"
+                name="senderHardwareAddressMask"
+                placeholder="Enter Sender Hardware Address Mask"
+                value={this.state.senderHardwareAddressMask}
+                onChange={this.handleChange}
+              />
+            </Form.Group>
+            </Form.Row>
+
+            {/* Sender Protocol Address */}
+            <Form.Row>
               <Form.Group as={Col} controlId="formGridSenderProtocolAddress">
                 <Form.Label>
                   Sender Protocol Address{" "}
@@ -347,10 +819,36 @@ export class ARPForm extends Component {
                 />
               </Form.Group>
 
+              <Form.Group as={Col} controlId="formGridSenderProtocolAddressMask">
+                <Form.Label>
+                  Sender Protocol Address Mask{" "}
+                  <OverlayTrigger
+                    placement="bottom"
+                    delay={{ show: 250, hide: 400 }}
+                    overlay={
+                      <Tooltip>
+                        Format to be followed: x.x.x.x where x=[0,255]{" "}
+                      </Tooltip>
+                    }
+                  >
+                    <small style={{ color: "#5DADE2" }}>
+                      <FaQuestion />
+                    </small>
+                  </OverlayTrigger>
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  name="senderProtocolAddressMask"
+                  placeholder="Enter Sender Protocol Address Mask"
+                  value={this.state.senderProtocolAddressMask}
+                  onChange={this.handleChange}
+                />
+              </Form.Group>
+              
             </Form.Row>
 
-            <Form.Row>
-              {/* Target Hardware Address */}
+            {/* Target Hardware Address */}
+            <Form.Row> 
               <Form.Group as={Col} controlId="formGridTargetHardwareAddress">
                 <Form.Label>
                   Target Hardware Address{" "}
@@ -378,7 +876,39 @@ export class ARPForm extends Component {
                 />
               </Form.Group>
 
+              <Form.Group as={Col} controlId="formGridTargetHardwareAddressMask">
+                <Form.Label>
+                Target Hardware Address Mask{" "}
+                  <OverlayTrigger
+                    placement="bottom"
+                    delay={{ show: 250, hide: 400 }}
+                    overlay={
+                      <Tooltip>
+                        Maximum 6 octets can be matched. Format to be followed:
+                        x:x:x:x:x:x where x=00...ff{" "}
+                      </Tooltip>
+                    }
+                  >
+                    <small style={{ color: "#5DADE2" }}>
+                      <FaQuestion />
+                    </small>
+                  </OverlayTrigger>
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  name="targetHardwareAddressMask"
+                  placeholder="Enter Target Hardware Address Mask"
+                  value={this.state.targetHardwareAddressMask}
+                  onChange={this.handleChange}
+                />
+              </Form.Group>
+
+
+
+            </Form.Row>
+
             {/* Target Protocol Address */}
+            <Form.Row>
               <Form.Group as={Col} controlId="formGridTargetProtocolAddress">
                 <Form.Label>
                   Target Protocol Address{" "}
@@ -404,38 +934,108 @@ export class ARPForm extends Component {
                   onChange={this.handleChange}
                 />
               </Form.Group>
+
+              <Form.Group as={Col} controlId="formGridTargetProtocolAddressMask">
+                <Form.Label>
+                Target Protocol Address Mask{" "}
+                  <OverlayTrigger
+                    placement="bottom"
+                    delay={{ show: 250, hide: 400 }}
+                    overlay={
+                      <Tooltip>
+                        Format to be followed: x.x.x.x where x=[0,255]{" "}
+                      </Tooltip>
+                    }
+                  >
+                    <small style={{ color: "#5DADE2" }}>
+                      <FaQuestion />
+                    </small>
+                  </OverlayTrigger>
+                </Form.Label>
+                <Form.Control
+                  type="text"
+                  name="targetProtocolAddressMask"
+                  placeholder="Enter Target Protocol Address Mask"
+                  value={this.state.targetProtocolAddressMask}
+                  onChange={this.handleChange}
+                />
+              </Form.Group>
               
             </Form.Row>
-            {/* Check on this
-             */}
+
             {this.state.emptyError ? (
               <small>
                 <Alert variant="danger">All the fields can't be empty</Alert>
               </small>
             ) : null}
-            {this.state.protocolError ? (
+            {this.state.hardwareTypeError ? (
               <small>
-                <Alert variant="danger">Invalid Protocol Number</Alert>
+                <Alert variant="danger">Invalid Hardware Type</Alert>
               </small>
             ) : null}
-            {this.state.sourceIPError ? (
+            {this.state.operationError ? (
               <small>
-                <Alert variant="danger">Invalid Source IP</Alert>
+                <Alert variant="danger">Invalid Operation</Alert>
               </small>
             ) : null}
-            {this.state.sourceIPMaskError ? (
+            {this.state.senderHardwareAddressError ? (
               <small>
-                <Alert variant="danger">Invalid Source IP Mask</Alert>
+                <Alert variant="danger">Invalid Sender Hardware Address</Alert>
               </small>
             ) : null}
-            {this.state.destinationIPError ? (
+            {this.state.senderHardwareAddressMaskEmptyError ? (
               <small>
-                <Alert variant="danger">Invalid Destination IP</Alert>
+                <Alert variant="danger">Sender Hardware Address Mask can't be empty</Alert>
               </small>
             ) : null}
-            {this.state.destinationIPMaskError ? (
+            {this.state.senderHardwareAddressMaskError ? (
               <small>
-                <Alert variant="danger">Invalid Destination IP Mask</Alert>
+                <Alert variant="danger">Invalid Sender Hardware Address Mask</Alert>
+              </small>
+            ) : null}
+            {this.state.senderProtocolAddressError ? (
+              <small>
+                <Alert variant="danger">Invalid Sender Protocol Address</Alert>
+              </small>
+            ) : null}
+            {this.state.senderProtocolAddressMaskEmptyError ? (
+              <small>
+                <Alert variant="danger">Sender Protocol Address Mask can't be empty</Alert>
+              </small>
+            ) : null}
+            {this.state.senderProtocolAddressMaskError ? (
+              <small>
+                <Alert variant="danger">Invalid Sender Protocol Address Mask</Alert>
+              </small>
+            ) : null}
+            {this.state.targetHardwareAddressError ? (
+              <small>
+                <Alert variant="danger">Invalid Target Hardware Address</Alert>
+              </small>
+            ) : null}
+            {this.state.targetHardwareAddressMaskEmptyError ? (
+              <small>
+                <Alert variant="danger">Target Hardware Address Mask can't be empty</Alert>
+              </small>
+            ) : null}
+            {this.state.targetHardwareAddressMaskError ? (
+              <small>
+                <Alert variant="danger">Invalid Target Hardware Address Mask</Alert>
+              </small>
+            ) : null}
+            {this.state.targetProtocolAddressError ? (
+              <small>
+                <Alert variant="danger">Invalid Target Protocol Address</Alert>
+              </small>
+            ) : null}
+            {this.state.targetProtocolAddressMaskEmptyError ? (
+              <small>
+                <Alert variant="danger">Target Protocol Address Mask can't be empty</Alert>
+              </small>
+            ) : null}
+            {this.state.targetProtocolAddressMaskError ? (
+              <small>
+                <Alert variant="danger">Invalid Target Protocol Address Mask</Alert>
               </small>
             ) : null}
 
@@ -452,7 +1052,7 @@ export class ARPForm extends Component {
           </Form>
         </Card.Body>
         {/* Renders DisplayTriplets component in the Card footer. */}
-        {this.state.ARPSubmit ? (
+        {this.state.arpSubmit ? (
           <DisplayTriplets action={this.state.tripletValue} />
         ) : null}
       </React.Fragment>

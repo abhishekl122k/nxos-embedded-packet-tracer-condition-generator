@@ -84,6 +84,7 @@ export class VXLANForm extends Component {
       else if (MY_GLOBAL.headersSelected[i] === "SRv6")
         othersOffset += MY_GLOBAL.srv6Length[i];
       else if (MY_GLOBAL.headersSelected[i] === "UDP") othersOffset += 8;
+      else if (MY_GLOBAL.headersSelected[i] === "ARP") othersOffset += 28;
     }
 
     let vniOffset = othersOffset + 4; // VNI field starts after 4 bytes in VXLAN header
