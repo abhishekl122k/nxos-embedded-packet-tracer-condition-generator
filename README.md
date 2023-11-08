@@ -20,4 +20,6 @@ The steps to install and run the application on a local machine are as follows:
 3. Now, navigate to the project directory and run the application on port 3000 by executing the following commands:
    -  `npm install` ( By default, it will install all modules listed as dependencies in package.json in the local node_modules folder )
    -  `npm start` ( Runs the app in the development mode. Open http://localhost:3000 to view it in the browser)
+   -  In case `npm start` throws the error `error:0308010C:digital envelope routines::unsupported`, try this:-
+      - In your package.json: change this line `"start": "react-scripts start"` to `"start": "react-scripts --openssl-legacy-provider start"`     
 
