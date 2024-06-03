@@ -393,7 +393,7 @@ class EthernetForm extends Component {
       dmacValue = this.bitwiseAnd(dmacValue, dmacMask);
       ans +=
         "DMAC: Offset " +
-        dmacOffset +
+        (dmacOffset*8).toString(16) +
         " Value 0x" +
         dmacValue +
         " Mask 0x" +
@@ -427,7 +427,7 @@ class EthernetForm extends Component {
       smacValue = this.bitwiseAnd(smacValue, smacMask);
       ans +=
         "SMAC: Offset " +
-        smacOffset +
+        (smacOffset*8).toString(16) +
         " Value 0x" +
         smacValue +
         " Mask 0x" +
@@ -440,7 +440,7 @@ class EthernetForm extends Component {
         typeMask = "0xffff";
         ans +=
           " Type: Offset " +
-          typeOffset +
+          (typeOffset*8).toString(16) +
           " Value " +
           this.state.otherType +
           " Mask " +
@@ -451,7 +451,7 @@ class EthernetForm extends Component {
         typeMask = "0xffff";
         ans +=
           " Type: Offset " +
-          typeOffset +
+          (typeOffset*8).toString(16) +
           " Value " +
           typeValue +
           " Mask " +

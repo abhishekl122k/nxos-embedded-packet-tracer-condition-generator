@@ -91,7 +91,7 @@ export class VXLANForm extends Component {
     let vniValue = parseInt(this.state.vni).toString(16);
     let vniMask = "ffffff"; // 24 bits
 
-    let ans = "VNI: Offset " + vniOffset + " Value 0x" + vniValue + " Mask 0x" + vniMask;
+    let ans = "VNI: Offset " + (vniOffset*8).toString(16) + " Value 0x" + vniValue + " Mask 0x" + vniMask;
     this.setState({
       tripletValue: ans,
     });

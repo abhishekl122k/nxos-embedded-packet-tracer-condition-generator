@@ -274,7 +274,7 @@ export class Dot1qForm extends Component {
           if (flag === 1 || tciMask.length === 4) {
             ans +=
               " Dot1q: Offset " +
-              tciOffset +
+              (tciOffset*8).toString(16) +
               " Value 0x" +
               tciValue +
               this.state.otherType.substr(2, this.state.type.length) +
@@ -285,7 +285,7 @@ export class Dot1qForm extends Component {
           } else {
             ans +=
               " Dot1q: Offset " +
-              tciOffset +
+              (tciOffset*8).toString(16) +
               " Value 0x" +
               tciValue +
               "000" +
@@ -301,7 +301,7 @@ export class Dot1qForm extends Component {
           typeMask = "0xffff";
           ans +=
             " Dot1q: Offset " +
-            typeOffset +
+            (typeOffset*8).toString(16) +
             " Value 0x" +
             typeValue +
             " Mask " +
@@ -313,7 +313,7 @@ export class Dot1qForm extends Component {
           if (flag === 1 || tciMask.length === 4) {
             ans +=
               " Dot1q: Offset " +
-              tciOffset +
+              (tciOffset*8).toString(16) +
               " Value 0x" +
               tciValue +
               typeDictionary[this.state.type] +
@@ -324,7 +324,7 @@ export class Dot1qForm extends Component {
           } else {
             ans +=
               " Dot1q: Offset " +
-              tciOffset +
+              (tciOffset*8).toString(16) +
               " Value 0x" +
               tciValue +
               "000" +
@@ -340,7 +340,7 @@ export class Dot1qForm extends Component {
           typeMask = "0xffff";
           ans +=
             " Dot1q: Offset " +
-            typeOffset +
+            (typeOffset*8).toString(16) +
             " Value 0x" +
             typeValue +
             " Mask " +
@@ -352,7 +352,7 @@ export class Dot1qForm extends Component {
       if (this.state.pcp !== "" && this.state.vid === "") {
         ans +=
           " Dot1q: Offset " +
-          tciOffset +
+          (tciOffset*8).toString(16) +
           " Value 0x" +
           tciValue +
           "0" +
@@ -363,7 +363,7 @@ export class Dot1qForm extends Component {
       } else {
         ans +=
           " Dot1q: Offset " +
-          tciOffset +
+          (tciOffset*8).toString(16) +
           " Value 0x" +
           tciValue +
           " Mask 0x" +

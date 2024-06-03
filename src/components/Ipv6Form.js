@@ -326,7 +326,7 @@ export class Ipv6Form extends Component {
       if (tosValue.length === 1) temp1 = "0";
       ans +=
         "Offset " +
-        tosOffset +
+        (tosOffset*8).toString(16) +
         " Value 0x" +
         "0" +
         temp1 +
@@ -369,7 +369,7 @@ export class Ipv6Form extends Component {
         sourceIPValue = this.bitwiseAnd(sourceIPValue, sourceIPMask);
         ans +=
           "Source IP: Offset " +
-          (sourceIPOffset + i * 4) +
+          ((sourceIPOffset + i * 4)*8).toString(16) +
           " Value 0x" +
           sourceIPValue +
           " Mask 0x" +
@@ -417,7 +417,7 @@ export class Ipv6Form extends Component {
         );
         ans +=
           "Destination IP: Offset " +
-          (destinationIPOffset + i * 4) +
+          ((destinationIPOffset + i * 4)*8).toString(16) +
           " Value 0x" +
           destinationIPValue +
           " Mask 0x" +

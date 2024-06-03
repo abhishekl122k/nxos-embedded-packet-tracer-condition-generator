@@ -382,7 +382,7 @@ export class SRv6Form extends Component {
       }
       ans +=
         "Next Header: Offset " +
-        nextHeaderOffset +
+        (nextHeaderOffset*8).toString(16) +
         " Value 0x" +
         nextHeaderValue +
         " Mask 0x" +
@@ -397,7 +397,7 @@ export class SRv6Form extends Component {
       }
       ans +=
         "Header Ext Length: Offset " +
-        hdrExtLenOffset +
+        (hdrExtLenOffset*8).toString(16) +
         " Value 0x" +
         hdrExtLenValue +
         " Mask 0x" +
@@ -408,7 +408,7 @@ export class SRv6Form extends Component {
     if (this.state.routingType === true) {
       ans +=
         "Routing Type: Offset " +
-        routingTypeOffset +
+        (routingTypeOffset*8).toString(16) +
         " Value 0x" +
         routingTypeValue +
         " Mask 0x" +
@@ -423,7 +423,7 @@ export class SRv6Form extends Component {
       }
       ans +=
         "Segments Left: Offset " +
-        segmentsLeftOffset +
+        (segmentsLeftOffset*8).toString(16) +
         " Value 0x" +
         segmentsLeftValue +
         " Mask 0x" +
@@ -438,7 +438,7 @@ export class SRv6Form extends Component {
       }
       ans +=
         "Flags: Offset " +
-        flagsOffset +
+        (flagsOffset*8).toString(16) +
         " Value 0x" +
         flagsValue +
         " Mask 0x" +
@@ -461,7 +461,7 @@ export class SRv6Form extends Component {
       }
       ans +=
         "Tag: Offset " +
-        tagOffset +
+        (tagOffset*8).toString(16) +
         " Value 0x" +
         tagValue +
         " Mask 0x" +

@@ -425,7 +425,7 @@ export class ARPForm extends Component {
 
       ans +=
         "Hardware Type: Offset " +
-        hardwareTypeOffset +
+        (hardwareTypeOffset*8).toString(16) +
         " Value 0x" +
         temp1 +
         hardwareTypeValue +
@@ -448,7 +448,7 @@ export class ARPForm extends Component {
 
       ans +=
         "Operation: Offset " +
-        operationOffset +
+        (operationOffset*8).toString(16) +
         " Value 0x" +
         temp2 +
         operationValue +
@@ -465,7 +465,7 @@ export class ARPForm extends Component {
         senderHardwareAddressValue = this.bitwiseAnd(senderHardwareAddressTemp1, senderHardwareAddressTemp2);
         ans +=
           "Sender Hardware Address: Offset " +
-          senderHardwareAddressOffset +
+          (senderHardwareAddressOffset*8).toString(16) +
           " Value 0x" +
           senderHardwareAddressValue.slice(0, senderHardwareAddressValue.length / 2) +
           " Mask 0x" +
@@ -476,7 +476,7 @@ export class ARPForm extends Component {
         
         ans +=
         "Sender Hardware Address: Offset " +
-        senderHardwareAddressOffset +
+        (senderHardwareAddressOffset*8).toString(16) +
         " Value 0x" +
         senderHardwareAddressValue.slice(senderHardwareAddressValue.length / 2) +
         " Mask 0x" +
@@ -536,7 +536,7 @@ export class ARPForm extends Component {
       senderProtocolAddressValue = this.bitwiseAnd(senderProtocolAddressValue, senderProtocolAddressMask);
       ans +=
         "Source IP: Offset " +
-        senderProtocolAddressOffset +
+        (senderProtocolAddressOffset*8).toString(16) +
         " Value 0x" +
         senderProtocolAddressValue +
         " Mask 0x" +
@@ -553,7 +553,7 @@ export class ARPForm extends Component {
         targetHardwareAddressValue = this.bitwiseAnd(targetHardwareAddressTemp1, targetHardwareAddressTemp2);
         ans +=
           "Target Hardware Address: Offset " +
-          targetHardwareAddressOffset +
+          (targetHardwareAddressOffset*8).toString(16) +
           " Value 0x" +
           targetHardwareAddressValue.slice(0, targetHardwareAddressValue.length / 2) +
           " Mask 0x" +
@@ -564,7 +564,7 @@ export class ARPForm extends Component {
         
         ans +=
         "Target Hardware Address: Offset " +
-        targetHardwareAddressOffset +
+        (targetHardwareAddressOffset*8).toString(16) +
         " Value 0x" +
         targetHardwareAddressValue.slice(targetHardwareAddressValue.length / 2) +
         " Mask 0x" +
@@ -624,7 +624,7 @@ export class ARPForm extends Component {
       targetProtocolAddressValue = this.bitwiseAnd(targetProtocolAddressValue, targetProtocolAddressMask);
       ans +=
         "Source IP: Offset " +
-        targetProtocolAddressOffset +
+        (targetProtocolAddressOffset*8).toString(16) +
         " Value 0x" +
         targetProtocolAddressValue +
         " Mask 0x" +

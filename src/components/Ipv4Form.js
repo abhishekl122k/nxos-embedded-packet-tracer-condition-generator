@@ -332,9 +332,11 @@ export class Ipv4Form extends Component {
         ans += "DSCP: ";
       }
       if (tosValue.length === 1) temp1 = "0";
+
+      
       ans +=
         "Offset " +
-        tosOffset +
+        (tosOffset*8).toString(16) +
         " Value 0x" +
         temp1 +
         tosValue +
@@ -348,7 +350,7 @@ export class Ipv4Form extends Component {
       if (protocolValue.length === 1) temp2 = "0";
       ans +=
         "Protocol: Offset " +
-        protocolOffset +
+        (protocolOffset*8).toString(16) +
         " Value 0x" +
         temp2 +
         protocolValue +
@@ -390,7 +392,7 @@ export class Ipv4Form extends Component {
       sourceIPValue = this.bitwiseAnd(sourceIPValue, sourceIPMask);
       ans +=
         "Source IP: Offset " +
-        sourceIPOffset +
+        (sourceIPOffset*8).toString(16) +
         " Value 0x" +
         sourceIPValue +
         " Mask 0x" +
@@ -433,7 +435,7 @@ export class Ipv4Form extends Component {
       );
       ans +=
         "Destination IP: Offset " +
-        destinationIPOffset +
+        (destinationIPOffset*8).toString(16) +
         " Value 0x" +
         destinationIPValue +
         " Mask 0x" +

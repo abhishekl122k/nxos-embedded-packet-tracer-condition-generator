@@ -291,7 +291,7 @@ export class TCPForm extends Component {
 
       ans +=
         "Source Port: Offset " +
-        sourcePortOffset +
+        (sourcePortOffset*8).toString(16) +
         " Value 0x" +
         temp1 +
         sourcePortValue +
@@ -315,7 +315,7 @@ export class TCPForm extends Component {
 
       ans +=
         "Destination Port: Offset " +
-        destinationPortOffset +
+        (destinationPortOffset*8).toString(16) +
         " Value 0x" +
         temp2 +
         destinationPortValue +
@@ -347,7 +347,7 @@ export class TCPForm extends Component {
 
       ans +=
         "Flags: Offset " +
-        flagOffset +
+        (flagOffset*8).toString(16) +
         " Value 0x" +
         temp3 +
         flagValue +

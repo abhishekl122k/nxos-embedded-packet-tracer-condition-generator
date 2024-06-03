@@ -176,7 +176,7 @@ export class UDPForm extends Component {
 
       ans +=
         "Source Port: Offset " +
-        sourcePortOffset +
+        (sourcePortOffset*8).toString(16) +
         " Value 0x" +
         temp1 +
         sourcePortValue +
@@ -200,7 +200,7 @@ export class UDPForm extends Component {
 
       ans +=
         "Destination Port: Offset " +
-        destinationPortOffset +
+        (destinationPortOffset*8).toString(16) +
         " Value 0x" +
         temp2 +
         destinationPortValue +

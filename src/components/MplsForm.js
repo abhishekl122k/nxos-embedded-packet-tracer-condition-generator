@@ -325,7 +325,7 @@ export class MplsForm extends Component {
       if (flag1 === 1) {
         ans +=
           "MPLS: Offset " +
-          labelOffset +
+          (labelOffset*8).toString(16) +
           " Value 0x" +
           labelValue +
           "0" +
@@ -343,7 +343,7 @@ export class MplsForm extends Component {
       ) {
         ans +=
           "MPLS: Offset " +
-          ttlOffset +
+          (ttlOffset*8).toString(16) +
           " Value 0x" +
           temp +
           ttlValue +
@@ -353,7 +353,7 @@ export class MplsForm extends Component {
       } else {
         ans +=
           "MPLS: Offset " +
-          labelOffset +
+          (labelOffset*8).toString(16) +
           " Value 0x" +
           labelValue +
           temp +
@@ -371,7 +371,7 @@ export class MplsForm extends Component {
       ) {
         ans +=
           "MPLS: Offset " +
-          labelOffset +
+          (labelOffset*8).toString(16) +
           " Value 0x" +
           labelValue +
           "0" +
@@ -382,7 +382,7 @@ export class MplsForm extends Component {
       } else {
         ans +=
           "MPLS: Offset " +
-          labelOffset +
+          (labelOffset*8).toString(16) +
           " Value 0x" +
           labelValue +
           " Mask 0x" +
