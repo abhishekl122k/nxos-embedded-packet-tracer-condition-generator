@@ -1,5 +1,5 @@
 
-# XR Embedded Packet Tracer - Condition Generator
+# NXOS Embedded Packet Tracer - Condition Generator
 
 The steps to install and run the application on a local machine are as follows:
 
